@@ -1,4 +1,3 @@
-<>
 import React, { useMemo, useState, useEffect, useRef } from "react";
 
 const founders = [
@@ -7,7 +6,7 @@ const founders = [
   { id: "ahmed", name: "Ahmed Sherif" },
 ];
 
-const EGP = (v) => ${v.toFixed(2)} EGP;
+const EGP = (v) => `${v.toFixed(2)} EGP`;
 
 function isSameMonthYear(a, b) {
   return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth();
@@ -20,7 +19,7 @@ function addMonths(date, delta) {
 }
 
 function monthKey(d) {
-  return ${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")};
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 }
 
 function* monthRange(start, end) {
@@ -284,7 +283,7 @@ export default function App() {
               <button
                 onClick={() => undo()}
                 disabled={!canUndo()}
-                className={text-xs px-3 py-1 rounded-full ${canUndo() ? "bg-gray-800 text-white" : "bg-gray-300 text-gray-500"}}
+                className={`text-xs px-3 py-1 rounded-full ${canUndo() ? "bg-gray-800 text-white" : "bg-gray-300 text-gray-500"}`}
                 title="Undo (Ctrl+Z / Cmd+Z)"
               >
                 Undo
@@ -292,7 +291,7 @@ export default function App() {
               <button
                 onClick={() => redo()}
                 disabled={!canRedo()}
-                className={text-xs px-3 py-1 rounded-full ${canRedo() ? "bg-gray-800 text-white" : "bg-gray-300 text-gray-500"}}
+                className={`text-xs px-3 py-1 rounded-full ${canRedo() ? "bg-gray-800 text-white" : "bg-gray-300 text-gray-500"}`}
                 title="Redo (Ctrl+Y or Ctrl+Shift+Z)"
               >
                 Redo
@@ -315,7 +314,7 @@ export default function App() {
               <input
                 type="month"
                 className="ml-3 border rounded px-2 py-1 text-sm"
-                value={${viewDate.getFullYear()}-${String(viewDate.getMonth() + 1).padStart(2, "0")}}
+                value={`${viewDate.getFullYear()}-${String(viewDate.getMonth() + 1).padStart(2, "0")}`}
                 onChange={(e) => setMonthFromInput(e.target.value)}
               />
             </div>
@@ -334,7 +333,7 @@ export default function App() {
                 <div key={s.id} className="border rounded-xl p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="font-semibold">{s.name}</div>
-                    <span className={text-xs px-2 py-1 rounded-full text-white ${badge}}>{s.status}</span>
+                    <span className={`text-xs px-2 py-1 rounded-full text-white ${badge}`}>{s.status}</span>
                   </div>
                   <div className="text-sm text-gray-700">Start: {s.start.toLocaleDateString()}</div>
                   <div className="text-sm">Monthly: {EGP(s.price)}</div>
@@ -426,7 +425,6 @@ export default function App() {
           <p className="mt-2 text-xs text-gray-600">Figures are cumulative from subscription start through the selected month, netted pairwise, and reduced by any recorded transfers. Use Reset All Data to start from zero again.</p>
         </section>
       </div>
-    </div>
-  );
+      </div>
+    );
 }
-</>
