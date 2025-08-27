@@ -1,4 +1,3 @@
-<>
 import React, { useMemo, useState, useEffect, useRef } from "react";
 
 const founders = [
@@ -7,7 +6,7 @@ const founders = [
   { id: "ahmed", name: "Ahmed Sherif" },
 ];
 
-const EGP = (v) => ${v.toFixed(2)} EGP;
+const EGP = (v) => `${v.toFixed(2)} EGP`;
 
 function isSameMonthYear(a, b) {
   return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth();
@@ -20,7 +19,7 @@ function addMonths(date, delta) {
 }
 
 function monthKey(d) {
-  return ${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")};
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 }
 
 function* monthRange(start, end) {
@@ -108,13 +107,30 @@ export default function App() {
     return zeroSettlementMatrix();
   });
   const [settlePayInput, setSettlePayInput] = useState(() => zeroSettlementInputs());
-  useEffect(() => localStorage.setItem("nexium-settlements", JSON.stringify(settlements)), [settlements]);
+  useEffect(
+    () => localStorage.setItem("nexium-settlements", JSON.stringify(settlements)),
+    [settlements]
+  );
 
   // Subscription rules with default payers
   const subscriptions = useMemo(
     () => [
-      { id: "chatgpt", name: "ChatGPT Plus", price: 600, start: new Date("2025-08-07"), firstMonthFree: false, defaultPayer: "faris" },
-      { id: "gemini", name: "Gemini Pro", price: 700, start: new Date("2025-08-01"), firstMonthFree: true, defaultPayer: "ahmed" },
+      {
+        id: "chatgpt",
+        name: "ChatGPT Plus",
+        price: 600,
+        start: new Date("2025-08-07"),
+        firstMonthFree: false,
+        defaultPayer: "faris",
+      },
+      {
+        id: "gemini",
+        name: "Gemini Pro",
+        price: 700,
+        start: new Date("2025-08-01"),
+        firstMonthFree: true,
+        defaultPayer: "ahmed",
+      },
     ],
     []
   );
@@ -145,11 +161,9 @@ export default function App() {
   // Keyboard shortcuts: Ctrl+Z / Cmd+Z for undo, Ctrl+Y or Ctrl+Shift+Z for redo
   useEffect(() => {
     const onKeyDown = (e) => {
-      const isEditable = (
+      const isEditable =
         e.target?.isContentEditable ||
-        ["INPUT", "TEXTAREA", "SELECT"].includes(e.target?.tagName)
-      );
-      // Do not hijack native undo in inputs
+        ["INPUT", "TEXTAREA", "SELECT"].includes(e.target?.tagName);
       if (isEditable) return;
 
       const ctrlOrMeta = e.ctrlKey || e.metaKey;
@@ -173,17 +187,26 @@ export default function App() {
   };
   const setPayer = (month, subId, founderId) => {
     snapshot();
-    setPayers((prev) => ({ ...prev, [month]: { ...(prev[month] || {}), [subId]: founderId } }));
+    setPayers((prev) => ({
+      ...prev,
+      [month]: { ...(prev[month] || {}), [subId]: founderId },
+    }));
   };
 
   // Charges for selected month per subscription
   const monthCharges = useMemo(() => {
     return subscriptions.map((s) => {
-      const beforeStart = s.start.getFullYear() * 12 + s.start.getMonth() > viewDate.getFullYear() * 12 + viewDate.getMonth();
+      const beforeStart =
+        s.start.getFullYear() * 12 + s.start.getMonth() >
+        viewDate.getFullYear() * 12 + viewDate.getMonth();
       if (beforeStart) return { ...s, charge: 0, status: "Not started" };
       const firstMonth = isSameMonthYear(s.start, viewDate);
       const isFree = s.firstMonthFree && firstMonth;
-      return { ...s, charge: isFree ? 0 : s.price, status: isFree ? "First Month Free" : "Due" };
+      return {
+        ...s,
+        charge: isFree ? 0 : s.price,
+        status: isFree ? "First Month Free" : "Due",
+      };
     });
   }, [subscriptions, viewDate]);
 
@@ -191,7 +214,9 @@ export default function App() {
   const rawSettle = zeroSettlementMatrix();
   for (const d of monthRange(earliestStart, viewDate)) {
     for (const s of subscriptions) {
-      const beforeStart = s.start.getFullYear() * 12 + s.start.getMonth() > d.getFullYear() * 12 + d.getMonth();
+      const beforeStart =
+        s.start.getFullYear() * 12 + s.start.getMonth() >
+        d.getFullYear() * 12 + d.getMonth();
       if (beforeStart) continue;
       const isFree = s.firstMonthFree && isSameMonthYear(s.start, d);
       const charge = isFree ? 0 : s.price;
@@ -245,7 +270,10 @@ export default function App() {
     snapshot();
     setSettlements((prev) => ({
       ...prev,
-      [debtorId]: { ...(prev[debtorId] || {}), [creditorId]: (prev[debtorId]?.[creditorId] || 0) + amt },
+      [debtorId]: {
+        ...(prev[debtorId] || {}),
+        [creditorId]: (prev[debtorId]?.[creditorId] || 0) + amt,
+      },
     }));
     setSettlePayInput((prev) => ({
       ...prev,
@@ -279,12 +307,16 @@ export default function App() {
         {/* Header */}
         <header className="space-y-2">
           <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-600">Today: {today.toLocaleDateString()}</div>
+            <div className="text-sm text-gray-600">
+              Today: {today.toLocaleDateString()}
+            </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => undo()}
                 disabled={!canUndo()}
-                className={text-xs px-3 py-1 rounded-full ${canUndo() ? "bg-gray-800 text-white" : "bg-gray-300 text-gray-500"}}
+                className={`text-xs px-3 py-1 rounded-full ${
+                  canUndo() ? "bg-gray-800 text-white" : "bg-gray-300 text-gray-500"
+                }`}
                 title="Undo (Ctrl+Z / Cmd+Z)"
               >
                 Undo
@@ -292,7 +324,9 @@ export default function App() {
               <button
                 onClick={() => redo()}
                 disabled={!canRedo()}
-                className={text-xs px-3 py-1 rounded-full ${canRedo() ? "bg-gray-800 text-white" : "bg-gray-300 text-gray-500"}}
+                className={`text-xs px-3 py-1 rounded-full ${
+                  canRedo() ? "bg-gray-800 text-white" : "bg-gray-300 text-gray-500"
+                }`}
                 title="Redo (Ctrl+Y or Ctrl+Shift+Z)"
               >
                 Redo
@@ -307,15 +341,34 @@ export default function App() {
             </div>
           </div>
           <div className="flex items-center justify-between gap-4">
-            <h1 className="text-2xl font-bold">Nexium AI Subscriptions Splitter</h1>
+            <h1 className="text-2xl font-bold">
+              Nexium AI Subscriptions Splitter
+            </h1>
             <div className="flex items-center gap-2">
-              <button className="px-3 py-1 rounded-full bg-black text-white text-xs" onClick={() => goMonth(-1)}>◀</button>
-              <div className="text-sm text-gray-700 w-40 text-center">{viewDate.toLocaleString(undefined, { month: "long", year: "numeric" })}</div>
-              <button className="px-3 py-1 rounded-full bg-black text-white text-xs" onClick={() => goMonth(1)}>▶</button>
+              <button
+                className="px-3 py-1 rounded-full bg-black text-white text-xs"
+                onClick={() => goMonth(-1)}
+              >
+                ◀
+              </button>
+              <div className="text-sm text-gray-700 w-40 text-center">
+                {viewDate.toLocaleString(undefined, {
+                  month: "long",
+                  year: "numeric",
+                })}
+              </div>
+              <button
+                className="px-3 py-1 rounded-full bg-black text-white text-xs"
+                onClick={() => goMonth(1)}
+              >
+                ▶
+              </button>
               <input
                 type="month"
                 className="ml-3 border rounded px-2 py-1 text-sm"
-                value={${viewDate.getFullYear()}-${String(viewDate.getMonth() + 1).padStart(2, "0")}}
+                value={`${viewDate.getFullYear()}-${String(
+                  viewDate.getMonth() + 1
+                ).padStart(2, "0")}`}
                 onChange={(e) => setMonthFromInput(e.target.value)}
               />
             </div>
@@ -327,32 +380,63 @@ export default function App() {
           <h2 className="font-semibold mb-3">Subscriptions</h2>
           <div className="grid md:grid-cols-2 gap-4">
             {monthCharges.map((s) => {
-              const badge = s.status === "First Month Free" ? "bg-blue-500" : s.status === "Due" ? "bg-orange-400" : "bg-gray-300";
+              const badge =
+                s.status === "First Month Free"
+                  ? "bg-blue-500"
+                  : s.status === "Due"
+                  ? "bg-orange-400"
+                  : "bg-gray-300";
               const currentPayerId = getPayer(keyMonth, s);
               const currentPayer = founders.find((x) => x.id === currentPayerId)?.name;
               return (
                 <div key={s.id} className="border rounded-xl p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="font-semibold">{s.name}</div>
-                    <span className={text-xs px-2 py-1 rounded-full text-white ${badge}}>{s.status}</span>
+                    <span
+                      className={`text-xs px-2 py-1 rounded-full text-white ${badge}`}
+                    >
+                      {s.status}
+                    </span>
                   </div>
-                  <div className="text-sm text-gray-700">Start: {s.start.toLocaleDateString()}</div>
+                  <div className="text-sm text-gray-700">
+                    Start: {s.start.toLocaleDateString()}
+                  </div>
                   <div className="text-sm">Monthly: {EGP(s.price)}</div>
-                  <div className="text-sm">Current payer (card): <span className="font-medium">{currentPayer}</span></div>
-                  <div className="text-base font-medium">This month charge: {EGP(s.charge)}</div>
+                  <div className="text-sm">
+                    Current payer (card):{" "}
+                    <span className="font-medium">{currentPayer}</span>
+                  </div>
+                  <div className="text-base font-medium">
+                    This month charge: {EGP(s.charge)}
+                  </div>
                   <div className="pt-2 border-t">
-                    <div className="text-sm font-medium mb-1">Choose payer on card for <u>{viewDate.toLocaleString(undefined, { month: 'long', year: 'numeric' })}</u></div>
+                    <div className="text-sm font-medium mb-1">
+                      Choose payer on card for{" "}
+                      <u>
+                        {viewDate.toLocaleString(undefined, {
+                          month: "long",
+                          year: "numeric",
+                        })}
+                      </u>
+                    </div>
                     <select
                       className="border rounded px-2 py-1 text-sm"
                       value={currentPayerId}
-                      onChange={(e) => setPayer(keyMonth, s.id, e.target.value)}
+                      onChange={(e) =>
+                        setPayer(keyMonth, s.id, e.target.value)
+                      }
                       title="Exactly one card payer per subscription per month"
                     >
                       {founders.map((f) => (
-                        <option key={f.id} value={f.id}>{f.name}</option>
+                        <option key={f.id} value={f.id}>
+                          {f.name}
+                        </option>
                       ))}
                     </select>
-                    <p className="text-xs text-gray-600 mt-2">Default payers: Faris for ChatGPT, Ahmed for Gemini. Changing month changes the selection context.</p>
+                    <p className="text-xs text-gray-600 mt-2">
+                      Default payers: Faris for ChatGPT, Ahmed for Gemini.
+                      Changing month changes the selection context.
+                    </p>
                   </div>
                 </div>
               );
@@ -365,11 +449,13 @@ export default function App() {
           <h2 className="font-semibold mb-3">Founder Balances</h2>
           <div className="grid md:grid-cols-3 gap-4">
             {founders.map((f) => {
-              const peerLines = founders.filter((x) => x.id !== f.id).map((other) => {
-                const youOwe = netAfterPayments[f.id][other.id] || 0;
-                const theyOwe = netAfterPayments[other.id][f.id] || 0;
-                return { other, youOwe, theyOwe };
-              });
+              const peerLines = founders
+                .filter((x) => x.id !== f.id)
+                .map((other) => {
+                  const youOwe = netAfterPayments[f.id][other.id] || 0;
+                  const theyOwe = netAfterPayments[other.id][f.id] || 0;
+                  return { other, youOwe, theyOwe };
+                });
               const totalOwe = peerLines.reduce((sum, p) => sum + p.youOwe, 0);
               const totalOwed = peerLines.reduce((sum, p) => sum + p.theyOwe, 0);
               return (
@@ -380,14 +466,38 @@ export default function App() {
                       <div key={other.id} className="text-sm">
                         {youOwe > 0 ? (
                           <div className="flex items-center justify-between gap-2">
-                            <div>Owe {other.name}: {EGP(youOwe)}</div>
+                            <div>
+                              Owe {other.name}: {EGP(youOwe)}
+                            </div>
                             <div className="flex items-center gap-2">
-                              <input type="number" min="0" step="0.01" className="border rounded px-2 py-1 text-xs w-20" value={settlePayInput[f.id][other.id]} onChange={(e) => setSettlePayInput((prev) => ({ ...prev, [f.id]: { ...(prev[f.id]||{}), [other.id]: e.target.value } }))} />
-                              <button className="text-xs px-2 py-1 rounded bg-black text-white" onClick={() => recordSettlement(f.id, other.id)}>Pay</button>
+                              <input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                className="border rounded px-2 py-1 text-xs w-20"
+                                value={settlePayInput[f.id][other.id]}
+                                onChange={(e) =>
+                                  setSettlePayInput((prev) => ({
+                                    ...prev,
+                                    [f.id]: {
+                                      ...(prev[f.id] || {}),
+                                      [other.id]: e.target.value,
+                                    },
+                                  }))
+                                }
+                              />
+                              <button
+                                className="text-xs px-2 py-1 rounded bg-black text-white"
+                                onClick={() => recordSettlement(f.id, other.id)}
+                              >
+                                Pay
+                              </button>
                             </div>
                           </div>
                         ) : theyOwe > 0 ? (
-                          <div>{other.name} owes you: {EGP(theyOwe)}</div>
+                          <div>
+                            {other.name} owes you: {EGP(theyOwe)}
+                          </div>
                         ) : (
                           <div>Settled with {other.name}</div>
                         )}
@@ -418,15 +528,20 @@ export default function App() {
               {founders.map((f) => (
                 <tr key={f.id} className="border-b last:border-0">
                   <td className="py-2 pr-4">{f.name}</td>
-                  <td className="py-2 pr-4 font-medium">{EGP(dueTo[f.id] || 0)}</td>
+                  <td className="py-2 pr-4 font-medium">
+                    {EGP(dueTo[f.id] || 0)}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <p className="mt-2 text-xs text-gray-600">Figures are cumulative from subscription start through the selected month, netted pairwise, and reduced by any recorded transfers. Use Reset All Data to start from zero again.</p>
+          <p className="mt-2 text-xs text-gray-600">
+            Figures are cumulative from subscription start through the selected
+            month, netted pairwise, and reduced by any recorded transfers. Use
+            Reset All Data to start from zero again.
+          </p>
         </section>
       </div>
-    </div>
-  );
+    </div>
+  );
 }
-</>
